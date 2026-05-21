@@ -13,10 +13,43 @@ export default function Certificate({ data }: any) {
 
   return (
     <div className="certificate-wrapper">
-      <div className="certificate">
+      {/* استایل‌های position و overflow اضافه شد تا واترمارک بیرون نزند */}
+      <div className="certificate" style={{ position: 'relative', overflow: 'hidden' }}>
+
+        {/* --- DEMO WARNING BANNER --- */}
+        <div style={{ 
+          background: '#ef4444', 
+          color: '#fff', 
+          padding: '6px', 
+          fontSize: '11px', 
+          textAlign: 'center', 
+          fontWeight: 'bold', 
+          letterSpacing: '1px',
+          position: 'relative',
+          zIndex: 5
+        }}>
+          ⚠️ DEMO VERSION - NOT VALID FOR OFFICIAL USE ⚠️
+        </div>
+
+        {/* --- DEMO WATERMARK --- */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) rotate(-35deg)',
+          fontSize: 'clamp(4rem, 10vw, 7rem)', 
+          fontWeight: '900',
+          color: 'rgba(239, 68, 68, 0.08)', 
+          pointerEvents: 'none', 
+          whiteSpace: 'nowrap',
+          zIndex: 1, 
+          userSelect: 'none'
+        }}>
+          DEMO ONLY
+        </div>
 
         {/* TOP BANNER */}
-        <div className="top-banner">
+        <div className="top-banner" style={{ position: 'relative', zIndex: 2 }}>
           <div className="brand-row">
             <div className="brand-logo">TC</div>
             <div>
@@ -31,9 +64,9 @@ export default function Certificate({ data }: any) {
           </div>
         </div>
 
-        <div className="gold-divider"></div>
+        <div className="gold-divider" style={{ position: 'relative', zIndex: 2 }}></div>
 
-        <div className="cert-body">
+        <div className="cert-body" style={{ position: 'relative', zIndex: 2 }}>
           <div className="watermark">TC</div>
 
           {/* Student */}
@@ -98,7 +131,7 @@ export default function Certificate({ data }: any) {
         </div>
 
         {/* FOOTER */}
-        <div className="cert-footer">
+        <div className="cert-footer" style={{ position: 'relative', zIndex: 2 }}>
          
           <div className="footer-left">
             <div className="chain-badge">IOTA Rebased L1</div>
