@@ -193,6 +193,8 @@ export default function App() {
       formData.append('issuerEmail', emailInput);
       formData.append('issuerName', identity?.fullName || fullNameInput);
       formData.append('issuerUniversity', issuerUniversity); 
+      // 🔴 Hardcoded authId as requested for DEMO
+      formData.append('authId', "0x823e7925487a829195d2693a8be96c9dacfb505220a503ac176cf06deef65ad7");
       
       if (pdfFile) {
         formData.append('file', pdfFile);

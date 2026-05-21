@@ -69,17 +69,18 @@ const RecSchema = new mongoose.Schema({
 const Recommendation = mongoose.model('Recommendation', RecSchema);
 
 /* ======================================================
-   1. IOTA + SERVICE SETUP
+   1. IOTA + SERVICE SETUP (HARDCODED FOR DEMO)
 ====================================================== */
 const client = new IotaClient({ url: process.env.IOTA_NODE_URL || getFullnodeUrl('testnet') });
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const PACKAGE_ID = process.env.PACKAGE_ID;
-const PROTOCOL_CONFIG_ID = process.env.PROTOCOL_CONFIG_ID; 
+// 🔴 مقادیر دقیقاً بر اساس دمو هاردکد شدند
+const PACKAGE_ID = "0xcf3e0c00bd0829229c74af6aa5f127260d2d3ac8ce0d8df45b923c0dd8453199";
+const PROTOCOL_CONFIG_ID = "0x785ddbfe3d5586034d687a65e0d6329220032ff957c861b5ef96cb2ef3ad495e"; 
+const ISSUER_AUTH_ID = "0x823e7925487a829195d2693a8be96c9dacfb505220a503ac176cf06deef65ad7";
+
 const ADMIN_SECRET = process.env.ADMIN_ACCESS_KEY || 'Fendi';
 const SERP_API_KEY = process.env.SERP_API_KEY;
-
-const ISSUER_AUTH_ID = "0x823e7925487a829195d2693a8be96c9dacfb505220a503ac176cf06deef65ad7";
 
 if (!process.env.ISSUER_MNEMONIC) {
     console.error("❌ Error: ISSUER_MNEMONIC is missing in .env");
@@ -212,6 +213,9 @@ app.post('/api/issue', upload.single('file'), async (req, res) => {
   try {
     let { authId, studentName, passport, content, issuerEmail, issuerName, issuerUniversity } = req.body;
 
+    // 🔴 تضمین استفاده از مقادیر هاردکد شده
+    if (!authId) authId = ISSUER_AUTH_ID;
+
     let finalContent = content;
     if (req.file) {
       const base64Data = req.file.buffer.toString('base64');
@@ -256,7 +260,7 @@ app.post('/api/issue', upload.single('file'), async (req, res) => {
     };
 
     const vcString = JSON.stringify(signedVc);
-    const contentHash = sha256(vcString); //Hasing entire VC for on-cain reference
+    const contentHash = sha256(vcString); //Hasing entire VC for on-chain reference
 
     /* ======================================================
        IOTA TRANSACTION
