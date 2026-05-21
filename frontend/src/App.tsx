@@ -785,7 +785,7 @@ export default function App() {
                 <button 
                   style={{ ...buttonStyle('#c084fc'), marginTop: 15 }} 
                   onClick={() => {
-                    navigator.clipboard.writeText(`https://trustcycle.tech/cert/${issuedRef}`);
+                    navigator.clipboard.writeText(`https://trust-cycle-drs.vercel.app/cert/${issuedRef}`);
                     alert("🔗 Shareable Link Copied!");
                   }}
                 >
@@ -886,7 +886,7 @@ export default function App() {
                       <button
                         style={{...buttonStyle(), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}}
                         onClick={() => {
-                          navigator.clipboard.writeText(`https://trustcycle.tech/cert/${selectedRec.id}`);
+                          navigator.clipboard.writeText(`https://trust-cycle-drs.vercel.app/cert/${selectedRec.id}`);
                           alert('🔗 Shareable Link Copied!');
                         }}
                       >
@@ -944,7 +944,7 @@ export default function App() {
                         <button
                           style={{...buttonStyle(), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}}
                           onClick={() => {
-                            navigator.clipboard.writeText(`https://trustcycle.tech/cert/${selectedRec.id}`);
+                            navigator.clipboard.writeText(`https://trust-cycle-drs.vercel.app/cert/${selectedRec.id}`);
                             alert('🔗 Shareable Link Copied!');
                           }}
                         >
