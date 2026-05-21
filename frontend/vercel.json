@@ -1,0 +1,19 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://trustcycle-drs.onrender.com; connect-src 'self' https://trustcycle-drs.onrender.com https://*.iota.org https://*.iota.cafe wss://*.iota.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*;"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

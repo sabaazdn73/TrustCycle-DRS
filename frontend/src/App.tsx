@@ -11,6 +11,7 @@ const THEME = {
 };
 
 type Panel = 'professor' | 'student' | 'university' | 'verifier'| 'provider';
+
 // --- Custom Hook for Responsive Design ---
 function useWindowSize() {
   const [size, setSize] = useState<[number, number]>([0, 0]);
@@ -61,20 +62,21 @@ export default function App() {
     display: 'flex', flexDirection: 'column', alignItems: 'center',
     justifyContent: 'center', color: THEME.text, fontFamily: 'system-ui, sans-serif',
     position: 'relative', overflowX: 'hidden', background: THEME.bg,
-    padding: isMobile ? '10px' : '0'
+    padding: isMobile ? '20px 10px' : '0'
   };
 
   const cardStyle: React.CSSProperties = {
     background: THEME.card, 
-    padding: isMobile ? '20px' : '40px', 
+    padding: isMobile ? '25px 20px' : '40px', 
     borderRadius: '24px',
     border: `1px solid ${THEME.accent}44`, 
-    width: isMobile ? '95%' : '520px', 
+    width: '100%',
+    maxWidth: '520px', 
     textAlign: 'center',
     boxShadow: `0 0 50px ${THEME.accent}22`, zIndex: 10, backdropFilter: 'blur(12px)',
     position: 'relative', 
     marginRight: isMobile ? '0' : '35%',
-    maxWidth: '100%' 
+    boxSizing: 'border-box'
   };
 
   const inputStyle: React.CSSProperties = {
@@ -185,16 +187,13 @@ export default function App() {
     }
     setLoading(true);
     try {
-      // Support pdf or text content, require at least one
       const formData = new FormData();
       formData.append('studentName', studentName);
       formData.append('passport', passport);
       formData.append('issuerEmail', emailInput);
       formData.append('issuerName', identity?.fullName || fullNameInput);
-      formData.append('issuerUniversity', issuerUniversity); // 👈 اضافه شد
-      formData.append('authId', "0x823e7925487a829195d2693a8be96c9dacfb505220a503ac176cf06deef65ad7");
-
-      // Logic: send pdf or content, backend wil andle it
+      formData.append('issuerUniversity', issuerUniversity); 
+      
       if (pdfFile) {
         formData.append('file', pdfFile);
       } else {
@@ -287,7 +286,6 @@ export default function App() {
     }
   }, []);
 
-  // ---  Download VC JSON ---
   const handleDownloadJSON = async (recId: string) => {
     setLoading(true);
     try {
@@ -311,7 +309,7 @@ export default function App() {
       setLoading(false);
     }
   };
-  //--- Verifier Logic ---
+
   const handleVerifyUploadedVC = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { IotaClient, getFullnodeUrl } = await import('@iota/iota-sdk/client');
     const { verifyPersonalMessageSignature } = await import('@iota/iota-sdk/verify');
@@ -331,11 +329,9 @@ export default function App() {
         
         setVerifyLogs(prev => [...prev, "✅ File parsed. Checking Ed25519 signature..."]);
 
-        // --- Step 1: Offline Cryptographic Check ---
         const signature = credential.proof.proofValue;
         const issuerAddress = credential.issuer.replace('did:iota:', '');
 
-        // Recreate te exact payload
         const vcPayloadForVerification = {
             "@context": credential["@context"],
             "type": credential.type,
@@ -355,7 +351,6 @@ export default function App() {
         }
         setVerifyLogs(prev => [...prev, "✅ Step 1: Signature is VALID. Content is authentic."]);
 
-        // --- Step 2: On-Chain IOTA Check ---
         setVerifyLogs(prev => [...prev, "🌐 Connecting to IOTA Rebased Testnet..."]);
         const client = new IotaClient({ url: getFullnodeUrl('testnet') });
         
@@ -429,7 +424,6 @@ export default function App() {
     );
   };
 
-
   const downloadPdfFromBase64 = (base64String: string, fileName: string) => {
   try {
     const base64Data = base64String.split('base64,')[1];
@@ -449,24 +443,25 @@ export default function App() {
     <div style={centeredLayout}>
 
       {window.location.pathname.startsWith('/cert/') ? (
-        <div style={{ width: '90%', maxWidth:'800px', zIndex: 10}}>
-          {selectedRec ? <Certificate data={selectedRec} /> : <h2>Loading Certificate ... </h2>}
+        <div style={{ width: '100%', maxWidth:'800px', zIndex: 10, padding: isMobile ? '10px' : '0' }}>
+          {selectedRec ? <Certificate data={selectedRec} /> : <h2 style={{textAlign: 'center'}}>Loading Certificate ... </h2>}
         </div>
       ) : (
         <>
       <BackgroundGlobe isMobile={isMobile} accentColor={THEME.accent} />
-      {/* ---  MasterZ iota logo on mobile --- */}
+      
+      {/* --- MasterZ iota logo --- */}
       <div style={{ 
         position: 'absolute', 
-        top: isMobile ? 10 : 20,    
-        left: isMobile ? 10 : 20,   
+        top: isMobile ? 15 : 20,    
+        left: isMobile ? 15 : 20,   
         zIndex: 20 
       }}>
         <img 
           src="/masterz_iota.png" 
           alt="masterz iota" 
           style={{ 
-            height: isMobile ? 40 : 120, // left-up logo conditional
+            height: isMobile ? 35 : 120, 
             opacity: 0.9 
           }} 
         />
@@ -476,37 +471,38 @@ export default function App() {
         textAlign: 'center', 
         marginBottom: '20px', 
         zIndex: 10, 
-        marginRight: isMobile ? '0' : '35%' 
+        marginTop: isMobile ? '50px' : '0',
+        marginRight: isMobile ? '0' : '35%',
+        padding: isMobile ? '0 10px' : '0'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
           <img src="/logo-galaxy.png" 
           alt="logo" 
           style={{ 
-            width: isMobile ? 40 : 80,  //logo size conditional
-            height: isMobile ? 70 : 110 
+            width: isMobile ? 45 : 80, 
+            height: isMobile ? 75 : 110 
             }}/>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-1.5px' }}>
+          <h1 style={{ fontSize: isMobile ? '2rem' : '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-1.5px' }}>
             Trust<span style={{ color: THEME.accent }}>Cycle</span>
           </h1>
         </div>
-        <p style={{ fontSize: '0.95rem', color: '#aaa', marginTop: '4px', fontWeight: 300 }}>
+        <p style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', color: '#aaa', marginTop: '8px', fontWeight: 300 }}>
           Decentralized Recommendation System <br />
-          <span style={{ fontSize: '0.75rem', opacity: 0.6, letterSpacing: 1 }}>An On-Chain Solution for Academia Based on the IOTA Trust Framework v0.1</span>
+          <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', opacity: 0.6, letterSpacing: 1 }}>An On-Chain Solution for Academia Based on the IOTA Trust Framework v0.1</span>
         </p>
       </div>
 
-
       <div style={{ 
         display: 'flex', 
-        gap: '10px', 
+        gap: '8px', 
         marginBottom: '25px', 
         zIndex: 10, 
         marginRight: isMobile ? '0' : '35%',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: isMobile ? '100%' : 'auto'
       }}>
-        {/* bottoms*/}
         {(['professor', 'student', 'university', 'verifier', 'provider'] as Panel[]).map(p => (
           <button 
             key={p} 
@@ -515,33 +511,35 @@ export default function App() {
                 background: panel === p ? THEME.accent : 'rgba(255,255,255,0.03)', 
                 color: panel === p ? '#fff' : '#888',
                 border: `1px solid ${panel === p ? THEME.accent : '#333'}`, 
-                padding: '0 16px', 
+                padding: isMobile ? '0 12px' : '0 16px', 
                 height: '36px',
                 display: 'inline-flex',
                 borderRadius: '100px', 
                 cursor: 'pointer',
-                fontSize: '0.8rem',
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
                 fontWeight: 600,
                 alignItems: 'center',
                 gap: '6px',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                flexGrow: isMobile ? 1 : 0,
+                justifyContent: 'center'
             }}
           >
             {p.toUpperCase()}
           </button>
         ))}
 
-        {/* 🚀 Action Buttons Container */}
         <div style={{ 
           display: 'flex', 
-          flexDirection: 'column', 
+          flexDirection: isMobile ? 'row' : 'column', 
           gap: '8px', 
           marginLeft: isMobile ? '0' : 'auto',
           alignItems: isMobile ? 'center' : 'flex-end',
-          marginTop: isMobile ? '12px' : '0'
+          marginTop: isMobile ? '12px' : '0',
+          width: isMobile ? '100%' : 'auto',
+          justifyContent: isMobile ? 'center' : 'flex-start'
         }}>
           
-          {/* 1. Final Report / Project Overview (Top Button) */}
           <a 
             href="/final-report.html" 
             target="_blank" 
@@ -560,20 +558,11 @@ export default function App() {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minWidth: '135px', 
+              minWidth: isMobile ? 'auto' : '135px',
+              flex: isMobile ? 1 : 'none',
               gap: '6px',
               transition: 'all 0.3s ease',
               cursor: 'pointer',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(147, 51, 234, 0.2)';
-              e.currentTarget.style.color = '#fff';
-              e.currentTarget.style.border = `1px solid ${THEME.accent}`;
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(147, 51, 234, 0.08)';
-              e.currentTarget.style.color = '#d8b4fe';
-              e.currentTarget.style.border = `1px solid rgba(147, 51, 234, 0.5)`;
             }}
           >
             <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
@@ -582,7 +571,6 @@ export default function App() {
             FINAL REPORT
           </a>
 
-          {/* 2. Litepaper (Bottom Button) */}
           <a 
             href="/TrustCycle_Litepaper.pdf" 
             target="_blank" 
@@ -601,20 +589,11 @@ export default function App() {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minWidth: '135px', 
+              minWidth: isMobile ? 'auto' : '135px',
+              flex: isMobile ? 1 : 'none',
               gap: '6px',
               transition: 'all 0.3s ease',
               cursor: 'pointer',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(147, 51, 234, 0.2)';
-              e.currentTarget.style.color = '#fff';
-              e.currentTarget.style.border = `1px solid ${THEME.accent}`;
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'rgba(147, 51, 234, 0.08)';
-              e.currentTarget.style.color = '#d8b4fe';
-              e.currentTarget.style.border = `1px solid rgba(147, 51, 234, 0.5)`;
             }}
           >
             <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -627,9 +606,6 @@ export default function App() {
       </div>
       
       <div style={cardStyle}>
-        {/* ======================================================
-            PANEL: PROVIDER
-        ====================================================== */}
         {panel === 'provider' && (
           <>
             <h2 style={{ color: THEME.accent, marginTop: 0 }}>Provider Admin</h2>
@@ -642,9 +618,7 @@ export default function App() {
             {statusMsg && <p style={{ color: THEME.accent, marginTop: '10px', fontSize: 14 }}>{statusMsg}</p>}
           </>
         )}
-        {/* ======================================================
-            PROFESSOR PANEL
-        ====================================================== */}
+        
         {panel === 'professor' && (
           <>
             <h2 style={{ color: THEME.accent, marginTop: 0 }}>Professor Portal</h2>
@@ -666,7 +640,6 @@ export default function App() {
                   Welcome back, <strong style={{ color: '#fff' }}>{identity?.fullName || fullNameInput}</strong>.
                 </p>
                 
-                {/* --- DEMO OTP BOX --- */}
                 {demoOtp && (
                   <div style={{ 
                     background: 'rgba(147, 51, 234, 0.1)', 
@@ -676,16 +649,17 @@ export default function App() {
                     marginBottom: '15px',
                     color: '#9333ea',
                     fontSize: '14px',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    wordBreak: 'break-all'
                   }}>
                     ✨ Demo Access Code: {demoOtp}
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: 8 }}>
-                    <input style={{...inputStyle, marginBottom: 0}} placeholder="Enter OTP Code" value={otpInput} onChange={e => setOtpInput(e.target.value)} />
+                <div style={{ display: 'flex', gap: 8, flexDirection: isMobile ? 'column' : 'row' }}>
+                    <input style={{...inputStyle, marginBottom: isMobile ? '8px' : '0'}} placeholder="Enter OTP Code" value={otpInput} onChange={e => setOtpInput(e.target.value)} />
                     <button 
-                        style={{ ...buttonStyle(), width: 'auto', minWidth: 100, marginTop: 0 }} 
+                        style={{ ...buttonStyle(), width: isMobile ? '100%' : 'auto', minWidth: 100, marginTop: 0 }} 
                         onClick={sendOtp} 
                         disabled={!canProceed || loading}
                     >
@@ -734,7 +708,6 @@ export default function App() {
                 <hr style={{ borderColor: '#333', margin: '15px 0' }} />
                 <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '10px' }}>Write recommendation <b>OR</b> upload PDF:</p>
 
-                {/* content field*/}
                 <textarea 
                   style={{ 
                     ...inputStyle, 
@@ -748,7 +721,6 @@ export default function App() {
                   disabled={!!pdfFile} 
                 />
 
-                {/* file field*/}
                 <input 
                   type="file" 
                   accept=".pdf"
@@ -824,9 +796,6 @@ export default function App() {
           </>
         )}
 
-        {/* ======================================================
-            PANEL: STUDENT VAULT
-        ====================================================== */}
         {panel === 'student' && (
           <>
             <h2 style={{ color: THEME.accent, marginTop: 0 }}>Student Vault</h2>
@@ -863,9 +832,17 @@ export default function App() {
                     <div style={{marginTop: 8, fontSize: 13, color: '#ccc'}}>
                       {r.content.startsWith('file:') ? "📄 PDF Document" : r.content.substring(0, 50) + "..."}
                     </div>
-                    <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-                      <button style={{ background: 'none', border: 'none', color: THEME.accent, fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleVerifyId(r.id)}>View Details</button>
-                      <button style={{ background: 'none', border: 'none', color: '#4ade80', fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleDownloadJSON(r.id)}>Download VC</button>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                      <button style={{ background: 'none', border: 'none', color: THEME.accent, fontSize: 12, cursor: 'pointer', fontWeight: 'bold', padding: 0 }} onClick={() => handleVerifyId(r.id)}>View Details</button>
+                      <button style={{ background: 'none', border: 'none', color: '#4ade80', fontSize: 12, cursor: 'pointer', fontWeight: 'bold', padding: 0 }} onClick={() => handleDownloadJSON(r.id)}>Download VC</button>
+                      <button 
+                        style={{ background: 'none', border: 'none', color: '#c084fc', fontSize: 12, cursor: 'pointer', fontWeight: 'bold', padding: 0 }} 
+                        onClick={() => {
+                          navigator.clipboard.writeText(r.id); 
+                          alert('🆔 Reference ID Copied!');
+                        }}>
+                          Copy Ref ID
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -893,17 +870,33 @@ export default function App() {
                         {selectedRec.id.slice(0, 8)}...{selectedRec.id.slice(-6)}
                       </code>
                       <button 
-                        onClick={() => {navigator.clipboard.writeText(`https://trustcycle.tech/cert/${selectedRec.id}`); alert('🔗 Direct Link Copied!');}}
                         style={{ background: '#222', border: 'none', color: '#888', fontSize: 9, borderRadius: 4, padding: '2px 6px', cursor: 'pointer' }}
-                      >Copy Link</button>
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedRec.id);
+                          alert('🆔 Reference ID Copied!');
+                        }}
+                        >
+                          Copy Ref ID
+                      </button>
                     </div>
                     
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                      <button style={{...buttonStyle(), width: 'auto', padding: '10px 15px'}} onClick={() => handleDownloadJSON(selectedRec.id)}>⬇️ Download VC (JSON)</button>
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <button
+                        style={{...buttonStyle(), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}}
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://trustcycle.tech/cert/${selectedRec.id}`);
+                          alert('🔗 Shareable Link Copied!');
+                        }}
+                      >
+                        ⬇️ Copy Shareable Link
+                      </button>
+                      <button style={{...buttonStyle(), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}} onClick={() => handleDownloadJSON(selectedRec.id)}>
+                        📥 Download VC JSON
+                      </button>
                       
                       {selectedRec.content.startsWith('file:') && selectedRec.status === 'Verified' && (
                         <button 
-                          style={{...buttonStyle('#22c55e'), width: 'auto', padding: '10px 15px'}} 
+                          style={{...buttonStyle('#22c55e'), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}} 
                           onClick={() => downloadPdfFromBase64(selectedRec.content, `Recommendation_${selectedRec.studentName}.pdf`)}
                         >
                           📥 Download PDF
@@ -916,9 +909,6 @@ export default function App() {
           </>
         )}
 
-        {/* ======================================================
-            PANEL: UNIVERSITY CHECK
-        ====================================================== */}
         {panel === 'university' && (
           <>
             <h2 style={{ color: THEME.accent, marginTop: 0 }}>University Check</h2>
@@ -930,25 +920,54 @@ export default function App() {
             {selectedRec && (
               <div style={{ marginTop: '24px', width: '100%', textAlign: 'center' }}>
                 <Certificate data={selectedRec} />
-                <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                    <button style={{...buttonStyle(), width: 'auto', padding: '10px 15px'}} onClick={() => handleDownloadJSON(selectedRec.id)}>⬇️ Download Official VC</button>
-                    {selectedRec.content.startsWith('file:') && selectedRec.status === 'Verified' && (
-                        <button 
-                            style={{...buttonStyle('#22c55e'), width: 'auto', padding: '10px 15px'}} 
-                            onClick={() => downloadPdfFromBase64(selectedRec.content, `Recommendation_${selectedRec.studentName}.pdf`)}
+                
+                <div style={{ borderTop: '1px solid #222', paddingTop: 12, marginTop: 15 }}>
+                    <p style={{fontSize: 10, color: '#666', margin: '0 0 4px 0'}}>REFERENCE ID</p>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10 }}>
+                      <code style={{fontSize: 12, color: THEME.accent}}>
+                        {selectedRec.id.slice(0, 8)}...{selectedRec.id.slice(-6)}
+                      </code>
+                      <button 
+                        style={{ background: '#222', border: 'none', color: '#888', fontSize: 9, borderRadius: 4, padding: '2px 6px', cursor: 'pointer' }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedRec.id);
+                          alert('🆔 Reference ID Copied!');
+                        }}
                         >
-                            📥 Download Official PDF
+                          Copy Ref ID
+                      </button>
+                    </div>
+
+                    <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <button
+                          style={{...buttonStyle(), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}}
+                          onClick={() => {
+                            navigator.clipboard.writeText(`https://trustcycle.tech/cert/${selectedRec.id}`);
+                            alert('🔗 Shareable Link Copied!');
+                          }}
+                        >
+                          ⬇️ Copy Shareable Link
                         </button>
-                    )}
+                        
+                        <button style={{...buttonStyle(), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}} onClick={() => handleDownloadJSON(selectedRec.id)}>
+                          ⬇️ Download Official VC
+                        </button>
+
+                        {selectedRec.content.startsWith('file:') && selectedRec.status === 'Verified' && (
+                            <button 
+                                style={{...buttonStyle('#22c55e'), width: 'auto', padding: '10px 15px', flexGrow: isMobile ? 1 : 0}} 
+                                onClick={() => downloadPdfFromBase64(selectedRec.content, `Recommendation_${selectedRec.studentName}.pdf`)}
+                            >
+                                📥 Download Official PDF
+                            </button>
+                        )}
+                    </div>
                 </div>
               </div>
             )}
           </>
         )}
 
-        {/* ======================================================
-            PANEL: VERIFIER
-        ====================================================== */}
         {panel === 'verifier' && (
           <>
             <h2 style={{ color: THEME.accent, marginTop: 0 }}>🛡️ Standalone Verifier</h2>
@@ -959,7 +978,7 @@ export default function App() {
             </div>
             
             {verifyLogs.length > 0 && (
-              <div style={{ marginTop: 20, background: '#080808', padding: 12, borderRadius: 10, textAlign: 'left', fontFamily: 'monospace', fontSize: 11, color: '#d8b4fe', maxHeight: 120, overflowY: 'auto' }}>
+              <div style={{ marginTop: 20, background: '#080808', padding: 12, borderRadius: 10, textAlign: 'left', fontFamily: 'monospace', fontSize: 11, color: '#d8b4fe', maxHeight: 120, overflowY: 'auto', wordBreak: 'break-all' }}>
                 {verifyLogs.map((log, i) => <div key={i} style={{ marginBottom: 4 }}>{log}</div>)}
               </div>
             )}
@@ -986,12 +1005,9 @@ export default function App() {
      )}
      </div>
 
-      {/* ======================================================
-          FOOTER SECTION
-      ====================================================== */}
       <div style={{ 
           position: isMobile ? 'relative' : 'absolute', bottom: isMobile ? 'auto' : 20, right: isMobile ? 'auto' : 30,
-          marginTop: isMobile ? '40px' : 0, paddingBottom: isMobile ? '20px' : 0, zIndex: 30, textAlign: isMobile ? 'center' : 'right'
+          marginTop: isMobile ? '40px' : 0, paddingBottom: isMobile ? '20px' : 0, zIndex: 30, textAlign: isMobile ? 'center' : 'right', width: isMobile ? '100%' : 'auto'
       }}>
         <p style={{ fontSize: '11px', color: '#817d7de9', margin: 0, fontFamily: 'monospace' }}>
           Crafted by <a href="https://www.linkedin.com/in/saba-azadegan-2974b622a" target="_blank" style={{ fontWeight: 'bold', color: '#8c8a8ac7', textDecoration: 'none', borderBottom: '1px dotted #7e7d7d' }}>Saba Azadegan</a>
