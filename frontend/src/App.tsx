@@ -193,7 +193,7 @@ export default function App() {
       formData.append('issuerEmail', emailInput);
       formData.append('issuerName', identity?.fullName || fullNameInput);
       formData.append('issuerUniversity', issuerUniversity); 
-      // 🔴 Hardcoded authId as requested for DEMO
+
       formData.append('authId', "0x823e7925487a829195d2693a8be96c9dacfb505220a503ac176cf06deef65ad7");
       
       if (pdfFile) {
@@ -489,7 +489,7 @@ export default function App() {
           </h1>
         </div>
         <p style={{ fontSize: isMobile ? '0.85rem' : '0.95rem', color: '#aaa', marginTop: '8px', fontWeight: 300 }}>
-          Decentralized Recommendation System - Demo Version<br />
+          Decentralized Recommendation System - LIVE DEMO<br />
           <span style={{ fontSize: isMobile ? '0.65rem' : '0.75rem', opacity: 0.6, letterSpacing: 1 }}>An On-Chain Solution for Academia Based on the IOTA Trust Framework</span>
         </p>
       </div>
@@ -632,7 +632,7 @@ export default function App() {
             <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            PILOT
+            BETA PILOT
           </a>
 
         </div>
